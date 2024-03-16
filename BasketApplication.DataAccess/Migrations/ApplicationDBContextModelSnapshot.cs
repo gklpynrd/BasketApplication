@@ -30,6 +30,12 @@ namespace BasketApplication.DataAccess.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
                     b.HasKey("AppUserId", "ProductId");
 
                     b.HasIndex("ProductId");
@@ -55,6 +61,77 @@ namespace BasketApplication.DataAccess.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+                });
+
+            modelBuilder.Entity("BasketApplication.Entities.Models.ProductStock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId")
+                        .IsUnique();
+
+                    b.ToTable("ProductStocks");
+                });
+
+            modelBuilder.Entity("BasketApplication.Entities.Models.PurchaseDetails", b =>
+                {
+                    b.Property<int>("PurchaseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("PurchaseId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("PurchaseDetails");
+                });
+
+            modelBuilder.Entity("BasketApplication.Entities.Models.PurchaseHistory", b =>
+                {
+                    b.Property<int>("PurchaseId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PurchaseId"));
+
+                    b.Property<int>("DetailsId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("PurchaseId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PurchaseHistories");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -86,13 +163,13 @@ namespace BasketApplication.DataAccess.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2092e5b8-560b-44ec-94f6-a96bffd1e68a",
+                            Id = "0a5eb477-93ec-4f81-a60a-0f0abef3bc4a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "65a4fb2f-8151-4b95-ab56-b4c8f60cb92c",
+                            Id = "3f143e21-07c4-4da6-90bc-1503915ad95a",
                             Name = "User",
                             NormalizedName = "User"
                         });
@@ -304,6 +381,45 @@ namespace BasketApplication.DataAccess.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("BasketApplication.Entities.Models.ProductStock", b =>
+                {
+                    b.HasOne("BasketApplication.Entities.Models.Product", null)
+                        .WithOne("Stock")
+                        .HasForeignKey("BasketApplication.Entities.Models.ProductStock", "ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BasketApplication.Entities.Models.PurchaseDetails", b =>
+                {
+                    b.HasOne("BasketApplication.Entities.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BasketApplication.Entities.Models.PurchaseHistory", "Purchase")
+                        .WithMany("Details")
+                        .HasForeignKey("PurchaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Purchase");
+                });
+
+            modelBuilder.Entity("BasketApplication.Entities.Models.PurchaseHistory", b =>
+                {
+                    b.HasOne("BasketApplication.Entities.Models.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -358,6 +474,14 @@ namespace BasketApplication.DataAccess.Migrations
             modelBuilder.Entity("BasketApplication.Entities.Models.Product", b =>
                 {
                     b.Navigation("AppUserBaskets");
+
+                    b.Navigation("Stock")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BasketApplication.Entities.Models.PurchaseHistory", b =>
+                {
+                    b.Navigation("Details");
                 });
 
             modelBuilder.Entity("BasketApplication.Entities.Models.AppUser", b =>

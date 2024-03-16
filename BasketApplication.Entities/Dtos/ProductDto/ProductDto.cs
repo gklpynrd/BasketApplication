@@ -1,4 +1,4 @@
-﻿namespace BasketApplication.Entities.Dtos.Product
+﻿namespace BasketApplication.Entities.Dtos.ProductDto
 {
     public class ProductDto
     {

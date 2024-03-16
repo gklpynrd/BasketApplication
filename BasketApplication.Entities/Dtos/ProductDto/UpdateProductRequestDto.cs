@@ -1,6 +1,6 @@
-﻿namespace BasketApplication.Entities.Dtos.Product
+﻿namespace BasketApplication.Entities.Dtos.ProductDto
 {
-    public class CreateProductRequestDto
+    public class UpdateProductRequestDto
     {
         public string Name { get; set; } = string.Empty;
         public decimal Price { get; set; }

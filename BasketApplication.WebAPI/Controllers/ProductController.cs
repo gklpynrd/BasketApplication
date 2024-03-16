@@ -1,11 +1,11 @@
 ﻿using BasketApplication.Entities.Abstract;
-using BasketApplication.Entities.Dtos.Product;
+using BasketApplication.Entities.Dtos.ProductDto;
 using BasketApplication.Helpers.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BasketApplication.WebAPI.Controllers
 {
-    [Route("api/stock")]
+    [Route("api/product")]
     [ApiController]
     public class ProductController : ControllerBase
     {
@@ -22,7 +22,7 @@ namespace BasketApplication.WebAPI.Controllers
             var products = await _productRepository.GetAllAsync();
             var productDto = products.Select(s => s.ToProductDto());
 
-            return Ok(products);
+            return Ok(productDto);
         }
 
         [HttpGet("{id}")]
@@ -41,7 +41,7 @@ namespace BasketApplication.WebAPI.Controllers
         {
             var productModel = productDto.ToProductFromCreateDto();
 
-            await _productRepository.CreateAsync(productModel);
+            await _productRepository.CreateAsync(productModel, productDto.Quantity);
 
             return CreatedAtAction(nameof(GetById), new { id = productModel.Id }, productModel.ToProductDto());
         }
@@ -66,6 +66,13 @@ namespace BasketApplication.WebAPI.Controllers
             if (productModel == null)
                 return NotFound();
             return NoContent();
+        }
+
+        [HttpGet]
+        [Route("stocks")]
+        public async Task<IActionResult> GetAllStocks()
+        {
+            return Ok(await _productRepository.GetAllStocksAsync());
         }
     }
 }

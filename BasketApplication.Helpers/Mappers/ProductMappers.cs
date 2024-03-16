@@ -1,4 +1,4 @@
-﻿using BasketApplication.Entities.Dtos.Product;
+﻿using BasketApplication.Entities.Dtos.ProductDto;
 using BasketApplication.Entities.Models;
 
 namespace BasketApplication.Helpers.Mappers

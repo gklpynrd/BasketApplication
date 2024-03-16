@@ -10,14 +10,21 @@ namespace BasketApplication.DataAccess
         public ApplicationDBContext(DbContextOptions dbContextOptions)
             : base(dbContextOptions)
         {
-
+            Database.Migrate();
         }
         public DbSet<Product> Products { get; set; }
         public DbSet<AppUserBasket> AppUserBaskets { get; set; }
+        public DbSet<PurchaseHistory> PurchaseHistories { get; set; }
+        public DbSet<PurchaseDetails> PurchaseDetails { get; set; }
+        public DbSet<ProductStock> ProductStocks { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<PurchaseHistory>().HasKey(x => x.PurchaseId);
+
+            builder.Entity<PurchaseDetails>().HasKey(x => new { x.PurchaseId, x.ProductId });
 
             builder.Entity<AppUserBasket>(x => x.HasKey(p => new { p.AppUserId, p.ProductId }));
 
